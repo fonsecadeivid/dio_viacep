@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:dio_viacep/via_cep/domain/entities/cep_back_for_app_entity.dart';
 import 'package:dio_viacep/via_cep/domain/entities/cep_back_for_app_params.dart';
 import 'package:dio_viacep/via_cep/ui/controller/via_cep_store.dart';
@@ -72,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ? null
                           : () {
                               if (_cepController.text.isNotEmpty) {
-                                limparErro(); // Limpa erro anterior
+                                limparErro();
                                 store.getAddressByCep(_cepController.text);
                               }
                             },
@@ -104,10 +106,67 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         SizedBox(
                           width: double.infinity,
-                          child: Text(
-                            'Dados do CEP',
-                            textAlign: TextAlign.center,
-                            style: Theme.of(context).textTheme.headlineMedium,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Dados do CEP',
+                                  textAlign: TextAlign.center,
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.headlineMedium,
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  debugPrint(
+                                    'Cep: ${store.objectId} Em edição ✍️',
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Colors.grey[600],
+                                  size: 24,
+                                ),
+                              ),
+                              SizedBox(width: 12),
+                              InkWell(
+                                onTap: () async {
+                                  debugPrint(
+                                    'Cep: ${store.objectId} removido 🗑️!!',
+                                  );
+                                  final isDeleted = await store
+                                      .deleteCepBackForApp();
+                                  if (isDeleted) {
+                                    limparCampos();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        backgroundColor: Colors.green[600],
+                                        content: Text(
+                                          'CEP removido com sucesso!',
+                                        ),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        backgroundColor: Colors.red[600],
+                                        content: Text(
+                                          'Selecione um CEP válido!!',
+                                        ),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: Icon(
+                                  Icons.delete_forever,
+                                  color: Colors.grey[600],
+                                  size: 24,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                         Divider(height: 2, color: Colors.grey),
@@ -465,7 +524,10 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ),
                               ],
                             ),
-                            trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                            trailing: Text(
+                              '📪',
+                              style: TextStyle(fontSize: 24),
+                            ),
                           ),
                         );
                       },
@@ -489,9 +551,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Observer(
                       builder: (context) {
                         return ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_cepController.text.isNotEmpty) {
-                              store.postCepBackForApp(
+                              final wasAdded = await store.postCepBackForApp(
                                 CepBackForAppParams(
                                   cep: Cep(
                                     cep: _cepController.text,
@@ -510,7 +572,32 @@ class _MyHomePageState extends State<MyHomePage> {
                                   ),
                                 ),
                               );
-                              limparCampos();
+                              if (wasAdded) {
+                                limparCampos();
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.green[600],
+                                    content: Text('CEP inserido com sucesso!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    backgroundColor: Colors.red[600],
+                                    content: Text('Selecione um CEP válido!!'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  backgroundColor: Colors.red[600],
+                                  content: Text('Selecione um CEP válido!!'),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
                             }
                           },
                           child: Text("Inserir"),

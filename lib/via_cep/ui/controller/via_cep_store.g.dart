@@ -136,6 +136,24 @@ mixin _$ViaCepStore on ViaCepStoreBase, Store {
     });
   }
 
+  late final _$objectIdAtom = Atom(
+    name: 'ViaCepStoreBase.objectId',
+    context: context,
+  );
+
+  @override
+  String get objectId {
+    _$objectIdAtom.reportRead();
+    return super.objectId;
+  }
+
+  @override
+  set objectId(String value) {
+    _$objectIdAtom.reportWrite(value, super.objectId, () {
+      super.objectId = value;
+    });
+  }
+
   late final _$getAddressByCepAsyncAction = AsyncAction(
     'ViaCepStoreBase.getAddressByCep',
     context: context,
@@ -162,9 +180,21 @@ mixin _$ViaCepStore on ViaCepStoreBase, Store {
   );
 
   @override
-  Future<void> postCepBackForApp(CepBackForAppParams params) {
+  Future<bool> postCepBackForApp(CepBackForAppParams params) {
     return _$postCepBackForAppAsyncAction.run(
       () => super.postCepBackForApp(params),
+    );
+  }
+
+  late final _$deleteCepBackForAppAsyncAction = AsyncAction(
+    'ViaCepStoreBase.deleteCepBackForApp',
+    context: context,
+  );
+
+  @override
+  Future<bool> deleteCepBackForApp() {
+    return _$deleteCepBackForAppAsyncAction.run(
+      () => super.deleteCepBackForApp(),
     );
   }
 
@@ -172,6 +202,18 @@ mixin _$ViaCepStore on ViaCepStoreBase, Store {
     name: 'ViaCepStoreBase',
     context: context,
   );
+
+  @override
+  void setObjectId(String value) {
+    final _$actionInfo = _$ViaCepStoreBaseActionController.startAction(
+      name: 'ViaCepStoreBase.setObjectId',
+    );
+    try {
+      return super.setObjectId(value);
+    } finally {
+      _$ViaCepStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
 
   @override
   void setCep(String value) {
@@ -254,7 +296,8 @@ postCepBackForAppEntity: ${postCepBackForAppEntity},
 loading: ${loading},
 hasError: ${hasError},
 hasDuplicateError: ${hasDuplicateError},
-cep: ${cep}
+cep: ${cep},
+objectId: ${objectId}
     ''';
   }
 }

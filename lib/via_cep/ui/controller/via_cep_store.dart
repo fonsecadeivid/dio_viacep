@@ -3,9 +3,7 @@ import 'package:dio_viacep/via_cep/domain/entities/cep_back_for_app_params.dart'
 import 'package:dio_viacep/via_cep/domain/entities/post_cep_back_for_app_entity.dart';
 import 'package:dio_viacep/via_cep/domain/entities/via_cep_entity.dart';
 import 'package:dio_viacep/via_cep/domain/entities/via_cep_params.dart';
-import 'package:dio_viacep/via_cep/domain/usecases/get_cep_for_app_usecases.dart';
-import 'package:dio_viacep/via_cep/domain/usecases/post_cep_back_for_app_usecases.dart';
-import 'package:dio_viacep/via_cep/domain/usecases/via_cep_usecases.dart';
+import 'package:dio_viacep/via_cep/domain/usecases/usecases.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:mobx/mobx.dart';
 part 'via_cep_store.g.dart';
@@ -16,14 +14,17 @@ abstract class ViaCepStoreBase with Store {
   final ViaCepUsecases _usecases;
   final GetCepForAppUsecases _getCepForAppUsecases;
   final PostCepBackForAppUsecases _postCepBackForAppUsecases;
+  final DeleteCepBackForAppUsecases _deleteCepBackForAppUsecases;
 
   ViaCepStoreBase({
     required ViaCepUsecases usecases,
     required GetCepForAppUsecases getCepForAppUsecases,
     required PostCepBackForAppUsecases postCepBackForAppUsecases,
+    required DeleteCepBackForAppUsecases deleteCepBackForAppUsecases,
   }) : _usecases = usecases,
        _getCepForAppUsecases = getCepForAppUsecases,
-       _postCepBackForAppUsecases = postCepBackForAppUsecases;
+       _postCepBackForAppUsecases = postCepBackForAppUsecases,
+       _deleteCepBackForAppUsecases = deleteCepBackForAppUsecases;
 
   @observable
   ViaCepEntity viaCepEntity = ViaCepEntity(
@@ -63,12 +64,20 @@ abstract class ViaCepStoreBase with Store {
   @observable
   String cep = '';
 
+  @observable
+  String objectId = '';
+
+  @action
+  void setObjectId(String value) => objectId = value;
+
   @action
   void setCep(String value) => cep = value;
 
   @action
   void fillCep(Cep cep) {
     clearDataCep();
+    setObjectId(cep.objectId ?? '');
+    debugPrint('Object ID: $objectId');
     viaCepEntity = ViaCepEntity(
       cep: cep.cep ?? '',
       logradouro: cep.logradouro ?? '',
@@ -101,6 +110,7 @@ abstract class ViaCepStoreBase with Store {
   }
 
   void clearDataCep() {
+    setObjectId('');
     viaCepEntity = ViaCepEntity(
       cep: '',
       logradouro: '',
@@ -116,12 +126,11 @@ abstract class ViaCepStoreBase with Store {
       ddd: '',
       siafi: '',
     );
-    //listCepBack.clear();
+
     hasError = false;
     hasDuplicateError = false;
     loading = false;
 
-    // Limpar feedback de sucesso
     postCepBackForAppEntity = PostCepBackForAppEntity(
       createdAt: '',
       objectId: '',
@@ -145,7 +154,6 @@ abstract class ViaCepStoreBase with Store {
           hasError = true;
           debugPrint('❌ Erro na busca do CEP: ${failure.message}');
 
-          // Limpar dados em caso de erro
           clearDataCep();
         },
         (address) {
@@ -211,29 +219,24 @@ abstract class ViaCepStoreBase with Store {
   bool isCepAlreadySaved(String cep) {
     if (cep.isEmpty) return false;
 
-    // Limpar o CEP de entrada (remover hífens e espaços)
     final cleanCep = cep.replaceAll(RegExp(r'[^\d]'), '');
 
-    // Verificar se existe na lista
     return listCepBack.any((savedCep) {
       if (savedCep.cep == null || savedCep.cep!.isEmpty) return false;
 
-      // Limpar o CEP salvo (remover hífens e espaços)
       final savedCleanCep = savedCep.cep!.replaceAll(RegExp(r'[^\d]'), '');
 
-      // Comparar os CEPs limpos
       return savedCleanCep == cleanCep;
     });
   }
 
   @action
-  Future<void> postCepBackForApp(CepBackForAppParams params) async {
-    // Verificar se o CEP já existe
+  Future<bool> postCepBackForApp(CepBackForAppParams params) async {
     if (isCepAlreadySaved(params.cep.cep ?? '')) {
       hasDuplicateError = true;
       hasError = false;
       debugPrint('❌ CEP já existe na lista: ${params.cep.cep}');
-      return;
+      return false;
     }
 
     loading = true;
@@ -242,12 +245,14 @@ abstract class ViaCepStoreBase with Store {
 
     final result = await _postCepBackForAppUsecases.call(params);
 
+    bool deleted = false;
     result.fold(
       (failure) {
         loading = false;
         hasError = true;
         hasDuplicateError = false;
-        debugPrint('Error: ${failure.message}');
+        debugPrint('❌ Error: ${failure.message}');
+        deleted = false;
       },
       (it) {
         hasError = false;
@@ -255,13 +260,53 @@ abstract class ViaCepStoreBase with Store {
         postCepBackForAppEntity = it;
         loading = false;
 
-        // Limpar dados após sucesso
         clearDataCep();
-        debugPrint('CEP inserido com sucesso! ObjectId: ${it.objectId}');
+        debugPrint('✅ CEP inserido com sucesso! ObjectId: ${it.objectId}');
 
-        // Recarregar a lista após inserir novo CEP
         getCepBackForApp();
+        deleted = true;
       },
     );
+    return deleted;
+  }
+
+  @action
+  Future<bool> deleteCepBackForApp() async {
+    if (objectId.isEmpty) {
+      debugPrint('❌ ObjectId vazio, não é possível deletar.');
+      return false;
+    }
+
+    try {
+      loading = true;
+      hasError = false;
+
+      final objectIdParams = objectId.trim();
+
+      final result = await _deleteCepBackForAppUsecases.call(objectIdParams);
+
+      bool deleted = false;
+      result.fold(
+        (failure) {
+          loading = false;
+          hasError = true;
+          debugPrint('❌ Erro ao deletar CEP: ${failure.message}');
+          deleted = false;
+        },
+        (success) {
+          loading = false;
+          hasError = false;
+          debugPrint('✅ CEP deletado com sucesso!');
+          getCepBackForApp();
+          deleted = true;
+        },
+      );
+      return deleted;
+    } catch (e) {
+      debugPrint('❌ Erro inesperado ao deletar CEP: $e');
+      loading = false;
+      hasError = true;
+      return false;
+    }
   }
 }

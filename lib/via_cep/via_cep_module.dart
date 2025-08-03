@@ -1,10 +1,6 @@
-import 'package:dio_viacep/via_cep/domain/repositories/get_cep_for_app.repository.dart';
-import 'package:dio_viacep/via_cep/domain/repositories/post_cep_back_for_app_repository.dart';
-import 'package:dio_viacep/via_cep/domain/repositories/via_cep_repository.dart';
+import 'package:dio_viacep/via_cep/domain/repositories/repositories.dart';
 import 'package:dio_viacep/via_cep/domain/usecases/usecases.dart';
 import 'package:dio_viacep/via_cep/external/datasource/datasource.dart';
-import 'package:dio_viacep/via_cep/external/datasource/get_cep_back_for_app_datasource_impl.dart';
-import 'package:dio_viacep/via_cep/external/datasource/post_cep_back_for_app_datasource_impl.dart';
 import 'package:dio_viacep/via_cep/infra/datasource/datasource.dart';
 import 'package:dio_viacep/via_cep/infra/repositories/repositories.dart';
 import 'package:dio_viacep/via_cep/ui/controller/via_cep_store.dart';
@@ -20,6 +16,7 @@ class ViaCepModule extends Module {
         usecases: i.get<ViaCepUsecases>(),
         getCepForAppUsecases: i.get<GetCepForAppUsecases>(),
         postCepBackForAppUsecases: i.get<PostCepBackForAppUsecases>(),
+        deleteCepBackForAppUsecases: i.get<DeleteCepBackForAppUsecases>(),
       ),
     ),
 
@@ -62,6 +59,23 @@ class ViaCepModule extends Module {
 
     Bind.lazySingleton<IPostCepBackForAppDatasource>(
       (i) => PostCepBackForAppDatasourceImpl(),
+    ),
+
+    // DeleteCepBackForApp =========================================================
+    Bind.lazySingleton<DeleteCepBackForAppUsecases>(
+      (i) => DeleteCepBackForAppUsecases(
+        repository: i.get<IDeleteCepBackForAppRepository>(),
+      ),
+    ),
+
+    Bind.lazySingleton<IDeleteCepBackForAppRepository>(
+      (i) => IDeleteCepBackForAppRepositoriesImpl(
+        datasource: i.get<IDeleteCepBackForAppDatasource>(),
+      ),
+    ),
+
+    Bind.lazySingleton<IDeleteCepBackForAppDatasource>(
+      (i) => DeleteCepBackForAppDatasourceImpl(),
     ),
   ];
 
