@@ -118,10 +118,44 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                               ),
                               InkWell(
-                                onTap: () {
-                                  debugPrint(
-                                    'Cep: ${store.objectId} Em edição ✍️',
-                                  );
+                                onTap: () async {
+                                  if (store.objectId.isNotEmpty) {
+                                    debugPrint(
+                                      'Cep ID: ${store.objectId} Em edição ✍️',
+                                    );
+                                    final result = await Modular.to.pushNamed(
+                                      '/edit',
+                                      arguments: [
+                                        store.viaCepEntity,
+                                        store.objectId,
+                                      ],
+                                    );
+                                    if (result != null) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          backgroundColor: Colors.green[600],
+                                          content: Text(
+                                            'Cep atualizado com sucesso!',
+                                          ),
+                                          duration: Duration(seconds: 2),
+                                        ),
+                                      );
+                                      store.getCepBackForApp();
+                                      setState(() {});
+                                    }
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        backgroundColor: Colors.red[600],
+                                        content: Text(
+                                          'Selecione um CEP válido para editar!',
+                                        ),
+                                        duration: Duration(seconds: 2),
+                                      ),
+                                    );
+                                  }
                                 },
                                 child: Icon(
                                   Icons.edit,

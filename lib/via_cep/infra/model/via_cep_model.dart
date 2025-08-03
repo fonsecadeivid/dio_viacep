@@ -1,11 +1,11 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first, overridden_fields, annotate_overrides
+// ignore_for_file: public_member_api_docs, sort_constructors_first, overridden_fields, annotate_overrides, must_be_immutable
 import 'dart:convert';
 
 import 'package:dio_viacep/via_cep/domain/entities/via_cep_entity.dart';
 import 'package:flutter/material.dart';
 
 class ViaCepModel extends ViaCepEntity {
-  const ViaCepModel({
+  ViaCepModel({
     required super.cep,
     required super.logradouro,
     required super.complemento,

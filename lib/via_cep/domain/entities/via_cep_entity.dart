@@ -1,3 +1,5 @@
+// ignore_for_file: must_be_immutable
+
 import 'package:equatable/equatable.dart';
 
 // {
@@ -17,21 +19,21 @@ import 'package:equatable/equatable.dart';
 // }
 
 class ViaCepEntity extends Equatable {
-  final String cep;
-  final String logradouro;
-  final String complemento;
-  final String unidade;
-  final String bairro;
-  final String localidade;
-  final String uf;
-  final String estado;
-  final String regiao;
-  final String ibge;
-  final String gia;
-  final String ddd;
-  final String siafi;
+  String cep;
+  String logradouro;
+  String complemento;
+  String unidade;
+  String bairro;
+  String localidade;
+  String uf;
+  String estado;
+  String regiao;
+  String ibge;
+  String gia;
+  String ddd;
+  String siafi;
 
-  const ViaCepEntity({
+  ViaCepEntity({
     required this.cep,
     required this.logradouro,
     required this.complemento,

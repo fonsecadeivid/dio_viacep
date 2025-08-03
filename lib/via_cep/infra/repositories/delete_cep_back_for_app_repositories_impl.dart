@@ -3,11 +3,11 @@ import 'package:dio_viacep/core/errors/failures.dart';
 import 'package:dio_viacep/via_cep/domain/repositories/delete_cep_back_for_app_repository.dart';
 import 'package:dio_viacep/via_cep/infra/datasource/delete_cep_back_for_app_datasource.dart';
 
-class IDeleteCepBackForAppRepositoriesImpl
+class DeleteCepBackForAppRepositoriesImpl
     implements IDeleteCepBackForAppRepository {
   final IDeleteCepBackForAppDatasource _datasource;
 
-  IDeleteCepBackForAppRepositoriesImpl({
+  DeleteCepBackForAppRepositoriesImpl({
     required IDeleteCepBackForAppDatasource datasource,
   }) : _datasource = datasource;
 

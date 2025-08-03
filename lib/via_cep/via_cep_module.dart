@@ -52,7 +52,7 @@ class ViaCepModule extends Module {
     ),
 
     Bind.lazySingleton<IPostCepBackForAppRepository>(
-      (i) => IPostCepBackForAppRepositoriesImpl(
+      (i) => PostCepBackForAppRepositoriesImpl(
         datasource: i.get<IPostCepBackForAppDatasource>(),
       ),
     ),
@@ -69,7 +69,7 @@ class ViaCepModule extends Module {
     ),
 
     Bind.lazySingleton<IDeleteCepBackForAppRepository>(
-      (i) => IDeleteCepBackForAppRepositoriesImpl(
+      (i) => DeleteCepBackForAppRepositoriesImpl(
         datasource: i.get<IDeleteCepBackForAppDatasource>(),
       ),
     ),

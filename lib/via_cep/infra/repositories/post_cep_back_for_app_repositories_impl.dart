@@ -6,11 +6,11 @@ import 'package:dio_viacep/via_cep/domain/entities/post_cep_back_for_app_entity.
 import 'package:dio_viacep/via_cep/domain/repositories/post_cep_back_for_app_repository.dart';
 import 'package:dio_viacep/via_cep/infra/datasource/post_cep_back_for_app_datasource.dart';
 
-class IPostCepBackForAppRepositoriesImpl
+class PostCepBackForAppRepositoriesImpl
     implements IPostCepBackForAppRepository {
   final IPostCepBackForAppDatasource _datasource;
 
-  IPostCepBackForAppRepositoriesImpl({
+  PostCepBackForAppRepositoriesImpl({
     required IPostCepBackForAppDatasource datasource,
   }) : _datasource = datasource;
 
