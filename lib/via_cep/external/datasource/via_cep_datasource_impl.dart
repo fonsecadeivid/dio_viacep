@@ -19,17 +19,28 @@ class ViaCepDatasourceImpl implements IViaCepDatasource {
       // Remove caracteres não numéricos do CEP
       final cleanCep = cep.replaceAll(RegExp(r'[^\d]'), '');
 
+      if (cleanCep.length != 8) {
+        throw ViaCepException();
+      }
+
+      debugPrint('Buscando CEP na API: $cleanCep');
+
       final response = await dio.get('$cleanCep/json');
 
       if (response.statusCode == 200) {
         final data = response.data;
         debugPrint('Dados recebidos da API: $data'); // Debug log
 
+        if (data == null) {
+          throw ViaCepException();
+        }
+
         final model = ViaCepModel.fromMap(data);
         debugPrint('Modelo criado: ${model.toString()}'); // Debug log
 
         return model;
       } else {
+        debugPrint('Erro na API: Status ${response.statusCode}');
         throw ViaCepException();
       }
     } catch (e) {

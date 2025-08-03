@@ -72,27 +72,32 @@ class ViaCepModel extends ViaCepEntity {
   }
 
   factory ViaCepModel.fromMap(Map<String, dynamic> map) {
-    if (map['erro'] == true) {
-      throw Exception('CEP não encontrado');
+    try {
+      if (map['erro'] == true) {
+        throw Exception('CEP não encontrado');
+      }
+
+      debugPrint('Mapeando dados: $map'); // Debug log
+
+      return ViaCepModel(
+        cep: (map['cep'] ?? '').toString(),
+        logradouro: (map['logradouro'] ?? '').toString(),
+        complemento: (map['complemento'] ?? '').toString(),
+        unidade: (map['unidade'] ?? '').toString(),
+        bairro: (map['bairro'] ?? '').toString(),
+        localidade: (map['localidade'] ?? '').toString(),
+        uf: (map['uf'] ?? '').toString(),
+        estado: (map['estado'] ?? '').toString(),
+        regiao: (map['regiao'] ?? '').toString(),
+        ibge: (map['ibge'] ?? '').toString(),
+        gia: (map['gia'] ?? '').toString(),
+        ddd: (map['ddd'] ?? '').toString(),
+        siafi: (map['siafi'] ?? '').toString(),
+      );
+    } catch (e) {
+      debugPrint('Erro ao mapear dados: $e');
+      throw Exception('Erro ao processar dados do CEP');
     }
-
-    debugPrint('Mapeando dados: $map'); // Debug log
-
-    return ViaCepModel(
-      cep: (map['cep'] ?? '').toString(),
-      logradouro: (map['logradouro'] ?? '').toString(),
-      complemento: (map['complemento'] ?? '').toString(),
-      unidade: (map['unidade'] ?? '').toString(),
-      bairro: (map['bairro'] ?? '').toString(),
-      localidade: (map['localidade'] ?? '').toString(),
-      uf: (map['uf'] ?? '').toString(),
-      estado: (map['estado'] ?? '').toString(),
-      regiao: (map['regiao'] ?? '').toString(),
-      ibge: (map['ibge'] ?? '').toString(),
-      gia: (map['gia'] ?? '').toString(),
-      ddd: (map['ddd'] ?? '').toString(),
-      siafi: (map['siafi'] ?? '').toString(),
-    );
   }
 
   String toJson() => json.encode(toMap());

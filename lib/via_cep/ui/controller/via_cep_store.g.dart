@@ -27,6 +27,46 @@ mixin _$ViaCepStore on ViaCepStoreBase, Store {
     });
   }
 
+  late final _$listCepBackAtom = Atom(
+    name: 'ViaCepStoreBase.listCepBack',
+    context: context,
+  );
+
+  @override
+  List<Cep> get listCepBack {
+    _$listCepBackAtom.reportRead();
+    return super.listCepBack;
+  }
+
+  @override
+  set listCepBack(List<Cep> value) {
+    _$listCepBackAtom.reportWrite(value, super.listCepBack, () {
+      super.listCepBack = value;
+    });
+  }
+
+  late final _$postCepBackForAppEntityAtom = Atom(
+    name: 'ViaCepStoreBase.postCepBackForAppEntity',
+    context: context,
+  );
+
+  @override
+  PostCepBackForAppEntity get postCepBackForAppEntity {
+    _$postCepBackForAppEntityAtom.reportRead();
+    return super.postCepBackForAppEntity;
+  }
+
+  @override
+  set postCepBackForAppEntity(PostCepBackForAppEntity value) {
+    _$postCepBackForAppEntityAtom.reportWrite(
+      value,
+      super.postCepBackForAppEntity,
+      () {
+        super.postCepBackForAppEntity = value;
+      },
+    );
+  }
+
   late final _$loadingAtom = Atom(
     name: 'ViaCepStoreBase.loading',
     context: context,
@@ -63,6 +103,24 @@ mixin _$ViaCepStore on ViaCepStoreBase, Store {
     });
   }
 
+  late final _$hasDuplicateErrorAtom = Atom(
+    name: 'ViaCepStoreBase.hasDuplicateError',
+    context: context,
+  );
+
+  @override
+  bool get hasDuplicateError {
+    _$hasDuplicateErrorAtom.reportRead();
+    return super.hasDuplicateError;
+  }
+
+  @override
+  set hasDuplicateError(bool value) {
+    _$hasDuplicateErrorAtom.reportWrite(value, super.hasDuplicateError, () {
+      super.hasDuplicateError = value;
+    });
+  }
+
   late final _$cepAtom = Atom(name: 'ViaCepStoreBase.cep', context: context);
 
   @override
@@ -88,6 +146,28 @@ mixin _$ViaCepStore on ViaCepStoreBase, Store {
     return _$getAddressByCepAsyncAction.run(() => super.getAddressByCep(cep));
   }
 
+  late final _$getCepBackForAppAsyncAction = AsyncAction(
+    'ViaCepStoreBase.getCepBackForApp',
+    context: context,
+  );
+
+  @override
+  Future<void> getCepBackForApp() {
+    return _$getCepBackForAppAsyncAction.run(() => super.getCepBackForApp());
+  }
+
+  late final _$postCepBackForAppAsyncAction = AsyncAction(
+    'ViaCepStoreBase.postCepBackForApp',
+    context: context,
+  );
+
+  @override
+  Future<void> postCepBackForApp(CepBackForAppParams params) {
+    return _$postCepBackForAppAsyncAction.run(
+      () => super.postCepBackForApp(params),
+    );
+  }
+
   late final _$ViaCepStoreBaseActionController = ActionController(
     name: 'ViaCepStoreBase',
     context: context,
@@ -106,11 +186,74 @@ mixin _$ViaCepStore on ViaCepStoreBase, Store {
   }
 
   @override
+  void fillCep(Cep cep) {
+    final _$actionInfo = _$ViaCepStoreBaseActionController.startAction(
+      name: 'ViaCepStoreBase.fillCep',
+    );
+    try {
+      return super.fillCep(cep);
+    } finally {
+      _$ViaCepStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void clearSuccessFeedback() {
+    final _$actionInfo = _$ViaCepStoreBaseActionController.startAction(
+      name: 'ViaCepStoreBase.clearSuccessFeedback',
+    );
+    try {
+      return super.clearSuccessFeedback();
+    } finally {
+      _$ViaCepStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  void clearError() {
+    final _$actionInfo = _$ViaCepStoreBaseActionController.startAction(
+      name: 'ViaCepStoreBase.clearError',
+    );
+    try {
+      return super.clearError();
+    } finally {
+      _$ViaCepStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  int getUniqueCepsCount() {
+    final _$actionInfo = _$ViaCepStoreBaseActionController.startAction(
+      name: 'ViaCepStoreBase.getUniqueCepsCount',
+    );
+    try {
+      return super.getUniqueCepsCount();
+    } finally {
+      _$ViaCepStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
+  bool isCepAlreadySaved(String cep) {
+    final _$actionInfo = _$ViaCepStoreBaseActionController.startAction(
+      name: 'ViaCepStoreBase.isCepAlreadySaved',
+    );
+    try {
+      return super.isCepAlreadySaved(cep);
+    } finally {
+      _$ViaCepStoreBaseActionController.endAction(_$actionInfo);
+    }
+  }
+
+  @override
   String toString() {
     return '''
 viaCepEntity: ${viaCepEntity},
+listCepBack: ${listCepBack},
+postCepBackForAppEntity: ${postCepBackForAppEntity},
 loading: ${loading},
 hasError: ${hasError},
+hasDuplicateError: ${hasDuplicateError},
 cep: ${cep}
     ''';
   }

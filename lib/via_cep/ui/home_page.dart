@@ -1,3 +1,5 @@
+import 'package:dio_viacep/via_cep/domain/entities/cep_back_for_app_entity.dart';
+import 'package:dio_viacep/via_cep/domain/entities/cep_back_for_app_params.dart';
 import 'package:dio_viacep/via_cep/ui/controller/via_cep_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -17,14 +19,30 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _cepController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    store.getCepBackForApp();
+  }
+
+  void limparCampos() {
+    _cepController.text = '';
+    store.clearDataCep();
+    setState(() {});
+  }
+
+  void limparErro() {
+    store.clearError();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Padding(
+      body: SafeArea(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
@@ -54,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           ? null
                           : () {
                               if (_cepController.text.isNotEmpty) {
+                                limparErro(); // Limpa erro anterior
                                 store.getAddressByCep(_cepController.text);
                               }
                             },
@@ -72,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
               Observer(
                 builder: (_) => Container(
                   width: double.infinity,
-                  height: 300,
+                  constraints: BoxConstraints(minHeight: 200, maxHeight: 280),
                   decoration: BoxDecoration(
                     color: Colors.grey[200],
                     borderRadius: BorderRadius.circular(12),
@@ -93,50 +112,81 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         Divider(height: 2, color: Colors.grey),
                         const SizedBox(height: 8),
-
-                        Text(
-                          'CEP: ${store.viaCepEntity.cep}',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        Text(
-                          'Logradouro: ${store.viaCepEntity.logradouro}',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        Text(
-                          'Unidade: ${store.viaCepEntity.unidade}',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        Text(
-                          'Complemento: ${store.viaCepEntity.complemento}',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        Text(
-                          'Bairro: ${store.viaCepEntity.bairro}',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        Text(
-                          'Localidade: ${store.viaCepEntity.localidade}',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        Text(
-                          'UF: ${store.viaCepEntity.uf}',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        Text(
-                          'Estado: ${store.viaCepEntity.estado}',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        Text(
-                          'Região: ${store.viaCepEntity.regiao}',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        Text(
-                          'IBGE: ${store.viaCepEntity.ibge}',
-                          style: Theme.of(context).textTheme.labelLarge,
-                        ),
-                        Text(
-                          'DDD: ${store.viaCepEntity.ddd}',
-                          style: Theme.of(context).textTheme.labelLarge,
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              spacing: 2.5,
+                              children: [
+                                Text(
+                                  'CEP: ${store.viaCepEntity.cep.isNotEmpty ? store.viaCepEntity.cep : 'Não informado'}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                                Text(
+                                  'Logradouro: ${store.viaCepEntity.logradouro.isNotEmpty ? store.viaCepEntity.logradouro : 'Não informado'}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                                Text(
+                                  'Unidade: ${store.viaCepEntity.unidade.isNotEmpty ? store.viaCepEntity.unidade : 'Não informado'}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                                Text(
+                                  'Complemento: ${store.viaCepEntity.complemento.isNotEmpty ? store.viaCepEntity.complemento : 'Não informado'}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                                Text(
+                                  'Bairro: ${store.viaCepEntity.bairro.isNotEmpty ? store.viaCepEntity.bairro : 'Não informado'}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                                Text(
+                                  'Localidade: ${store.viaCepEntity.localidade.isNotEmpty ? store.viaCepEntity.localidade : 'Não informado'}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                                Text(
+                                  'UF: ${store.viaCepEntity.uf.isNotEmpty ? store.viaCepEntity.uf : 'Não informado'}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                                Text(
+                                  'Estado: ${store.viaCepEntity.estado.isNotEmpty ? store.viaCepEntity.estado : 'Não informado'}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                                Text(
+                                  'Região: ${store.viaCepEntity.regiao.isNotEmpty ? store.viaCepEntity.regiao : 'Não informado'}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                                Text(
+                                  'IBGE: ${store.viaCepEntity.ibge.isNotEmpty ? store.viaCepEntity.ibge : 'Não informado'}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                                Text(
+                                  'DDD: ${store.viaCepEntity.ddd.isNotEmpty ? store.viaCepEntity.ddd : 'Não informado'}',
+                                  style: Theme.of(
+                                    context,
+                                  ).textTheme.labelMedium,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -152,48 +202,323 @@ class _MyHomePageState extends State<MyHomePage> {
                           color: Colors.red[100],
                           borderRadius: BorderRadius.circular(8),
                         ),
-                        child: Text(
-                          'Erro ao buscar CEP. Verifique se o CEP está correto.',
-                          style: TextStyle(color: Colors.red[800]),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    '❌ Erro ao buscar CEP',
+                                    style: TextStyle(
+                                      color: Colors.red[800],
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: limparErro,
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: Colors.red[800],
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                  constraints: BoxConstraints(),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Verifique se o CEP está correto e tente novamente.',
+                              style: TextStyle(color: Colors.red[800]),
+                            ),
+                          ],
                         ),
                       )
                     : SizedBox.shrink(),
               ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: 8,
-                    itemBuilder: (context, index) {
-                      return ListTile(
-                        title: Text("Título"),
-                        subtitle: Text('Sub Título'),
-                      );
-                    },
+              Observer(
+                builder: (_) => store.hasDuplicateError
+                    ? Container(
+                        margin: EdgeInsets.only(top: 16),
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.orange[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    '⚠️ CEP já existe',
+                                    style: TextStyle(
+                                      color: Colors.orange[800],
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: limparErro,
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: Colors.orange[800],
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                  constraints: BoxConstraints(),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'Este CEP já foi inserido anteriormente. Escolha outro CEP.',
+                              style: TextStyle(color: Colors.orange[800]),
+                            ),
+                          ],
+                        ),
+                      )
+                    : SizedBox.shrink(),
+              ),
+              Observer(
+                builder: (_) =>
+                    store.postCepBackForAppEntity.objectId != null &&
+                        store.postCepBackForAppEntity.objectId!.isNotEmpty
+                    ? Container(
+                        margin: EdgeInsets.only(top: 16),
+                        padding: EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.green[100],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    '✅ CEP inserido com sucesso!',
+                                    style: TextStyle(
+                                      color: Colors.green[800],
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  onPressed: () {
+                                    store.clearSuccessFeedback();
+                                  },
+                                  icon: Icon(
+                                    Icons.close,
+                                    color: Colors.green[800],
+                                  ),
+                                  padding: EdgeInsets.zero,
+                                  constraints: BoxConstraints(),
+                                ),
+                              ],
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'ID: ${store.postCepBackForAppEntity.objectId}',
+                              style: TextStyle(color: Colors.green[800]),
+                            ),
+                            SizedBox(height: 4),
+                            Text(
+                              'A lista foi atualizada automaticamente.',
+                              style: TextStyle(color: Colors.green[800]),
+                            ),
+                          ],
+                        ),
+                      )
+                    : SizedBox.shrink(),
+              ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Observer(
+                    builder: (_) => Text(
+                      'CEPs Salvos (${store.getUniqueCepsCount()})',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
+                  Observer(
+                    builder: (_) => IconButton(
+                      onPressed: store.loading
+                          ? null
+                          : () {
+                              store.getCepBackForApp();
+                            },
+                      icon: store.loading
+                          ? SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Icon(Icons.refresh),
+                      tooltip: 'Recarregar lista',
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Container(
+                constraints: BoxConstraints(minHeight: 200, maxHeight: 300),
+                child: Observer(
+                  builder: (context) {
+                    if (store.loading && store.listCepBack.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                            SizedBox(height: 16),
+                            Text('Carregando lista de CEPs...'),
+                          ],
+                        ),
+                      );
+                    }
+
+                    if (store.listCepBack.isEmpty && !store.loading) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.list_alt, size: 64, color: Colors.grey),
+                            SizedBox(height: 16),
+                            Text(
+                              'Nenhum CEP encontrado',
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            Text(
+                              'Insira um CEP para começar',
+                              style: TextStyle(color: Colors.grey[500]),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
+                    return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: store.listCepBack.length,
+                      itemBuilder: (context, index) {
+                        final cep = store.listCepBack[index];
+                        final isDuplicate =
+                            index > 0 &&
+                            store.listCepBack.take(index).any((prevCep) {
+                              if (prevCep.cep == null || cep.cep == null) {
+                                return false;
+                              }
+                              final prevClean = prevCep.cep!.replaceAll(
+                                RegExp(r'[^\d]'),
+                                '',
+                              );
+                              final currentClean = cep.cep!.replaceAll(
+                                RegExp(r'[^\d]'),
+                                '',
+                              );
+                              return prevClean == currentClean;
+                            });
+
+                        return InkWell(
+                          onTap: () {
+                            store.fillCep(cep);
+                          },
+                          child: ListTile(
+                            leading: Icon(
+                              Icons.location_on,
+                              color: isDuplicate ? Colors.orange : Colors.blue,
+                            ),
+                            title: Text(
+                              cep.cep ?? 'CEP não informado',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: isDuplicate ? Colors.orange[800] : null,
+                              ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  cep.logradouro ?? 'Endereço não informado',
+                                ),
+                                if (isDuplicate)
+                                  Text(
+                                    '⚠️ Duplicado',
+                                    style: TextStyle(
+                                      color: Colors.orange[800],
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            trailing: Icon(Icons.arrow_forward_ios, size: 16),
+                          ),
+                        );
+                      },
+                    );
+                  },
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: Text("Cancelar"),
-                      ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        limparCampos();
+                      },
+                      child: Text("Cancelar"),
                     ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      child: ElevatedButton(
-                        onPressed: () {},
-                        child: Text("Inserir"),
-                      ),
+                  ),
+                  SizedBox(width: 16),
+                  Expanded(
+                    child: Observer(
+                      builder: (context) {
+                        return ElevatedButton(
+                          onPressed: () {
+                            if (_cepController.text.isNotEmpty) {
+                              store.postCepBackForApp(
+                                CepBackForAppParams(
+                                  cep: Cep(
+                                    cep: _cepController.text,
+                                    logradouro: store.viaCepEntity.logradouro,
+                                    complemento: store.viaCepEntity.complemento,
+                                    unidade: store.viaCepEntity.unidade,
+                                    bairro: store.viaCepEntity.bairro,
+                                    localidade: store.viaCepEntity.localidade,
+                                    uf: store.viaCepEntity.uf,
+                                    estado: store.viaCepEntity.estado,
+                                    regiao: store.viaCepEntity.regiao,
+                                    ibge: store.viaCepEntity.ibge,
+                                    gia: store.viaCepEntity.gia,
+                                    ddd: store.viaCepEntity.ddd,
+                                    siafi: store.viaCepEntity.siafi,
+                                  ),
+                                ),
+                              );
+                              limparCampos();
+                            }
+                          },
+                          child: Text("Inserir"),
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               SizedBox(height: 24),
             ],
